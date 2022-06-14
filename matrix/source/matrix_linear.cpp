@@ -170,7 +170,7 @@ namespace advm {
 
 			for (int i = 0; i < dim; ++i) {
 				for (int j = 0; j < dim; ++j) {
-					matrix_power[i][j] = 0.0;
+					matrix_power[i][j] = this->container[i][j];
 				}
 			}
 
@@ -188,31 +188,29 @@ namespace advm {
 			for (int k = 2; k <= value; ++k) {
 
 				for (int i = 0; i < dim; ++i) {
+					for (int j = 0; j < dim; ++j) {
+						this->container[i][j] = 0.0;
+					}
+				}
+
+				for (int i = 0; i < dim; ++i) {
 
 					for (int j = 0; j < dim; ++j) {
 
 						for (int l = 0; l < dim; ++l) {
-							matrix_power[j][i] += matrix_buffer[j][l] * this->container[l][i];
+
+							this->container[j][i] += matrix_buffer[j][l] * matrix_power[l][i];
 						}
 					}
 				}
 
-				for (int i = 0; i < dim; ++i) {
-					for (int j = 0; j < dim; ++j) {
-						matrix_buffer[i][j] = matrix_power[i][j];
-					}
-				}
+				if (k != value) {
 
-				for (int i = 0; i < dim; ++i) {
-					for (int j = 0; j < dim; ++j) {
-						matrix_power[i][j] = 0.0;
+					for (int i = 0; i < dim; ++i) {
+						for (int j = 0; j < dim; ++j) {
+							matrix_power[i][j] = this->container[i][j];
+						}
 					}
-				}
-			}
-
-			for (int i = 0; i < dim; ++i) {
-				for (int j = 0; j < dim; ++j) {
-					this->container[i][j] = matrix_buffer[i][j];
 				}
 			}
 
@@ -305,7 +303,7 @@ namespace advm {
 
 				try {
 
-					value_is_null("gauss(const double(&)[]): system has no solutions", rank_transform[i][i]);
+					value_is_null("rank(): the system cannot be converted to a triangular form", rank_transform[i][i]);
 
 					double multiplier = rank_transform[j][i] / rank_transform[i][i];
 					for (int k = 0; k < this->cols; ++k) {

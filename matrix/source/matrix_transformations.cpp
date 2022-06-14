@@ -425,7 +425,7 @@ namespace advm {
 
 				try {
 
-					value_is_null("gauss(const double(&)[]): system has no solutions", copy_matrix[i][i]);
+					value_is_null("to_upper_triangular(): the system cannot be converted to a triangular form", copy_matrix[i][i]);
 
 					double multiplier = copy_matrix[j][i] / copy_matrix[i][i];
 					for (int k = 0; k < this->cols; ++k) {
