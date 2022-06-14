@@ -228,6 +228,8 @@ namespace advm {
 
 		void to_upper_triangular();
 
+		void to_lower_triangular();
+
 		int rank();
 
 		template <int N>

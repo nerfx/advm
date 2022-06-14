@@ -408,56 +408,106 @@ namespace advm {
 			}
 		}
 
-		double** copy_matrix = new double* [this->rows];
-		for (int i = 0; i < this->rows; ++i) {
-			copy_matrix[i] = new double[this->cols];
-		}
-
-		for (int i = 0; i < this->rows; ++i) {
-			for (int j = 0; j < this->cols; ++j) {
-				copy_matrix[i][j] = this->container[i][j];
-			}
-		}
-
 		for (int i = 0; i < this->rows; ++i) {
 
 			for (int j = i + 1; j < this->rows; ++j) {
 
 				try {
 
-					value_is_null("to_upper_triangular(): the system cannot be converted to a triangular form", copy_matrix[i][i]);
+					value_is_null("to_upper_triangular(): the system cannot be converted to a triangular form", 
+						this->container[i][i]);
 
-					double multiplier = copy_matrix[j][i] / copy_matrix[i][i];
+					double multiplier = this->container[j][i] / this->container[i][i];
 					for (int k = 0; k < this->cols; ++k) {
 
-						copy_matrix[j][k] = copy_matrix[j][k] - (multiplier * copy_matrix[i][k]);
+						this->container[j][k] = this->container[j][k] - (multiplier * this->container[i][k]);
 					}
 				}
 				catch (std::string& ex) {
 
 					std::cout << ex << '\n';
+
+					return;
 				}
 			}
 		}
 
 		for (int i = 0; i < this->rows; ++i) {
 
-			double value = copy_matrix[i][i];
+			double value = this->container[i][i];
 
 			for (int j = 0; j < this->cols; ++j) {
-				copy_matrix[i][j] = (!copy_matrix[i][j]) ? 0.0 : (copy_matrix[i][j] / value);
+				this->container[i][j] = (!this->container[i][j]) ? 0.0 : (this->container[i][j] / value);
+			}
+		}
+	}
+
+	void matrix::to_lower_triangular() {
+
+		if (this->rows == this->default_rows && this->cols == this->default_cols) {
+			return;
+		}
+
+		for (int i = 0; i < this->cols; ++i) {
+
+			for (int j = i; j < this->rows; ++j) {
+
+				if (!this->container[j][i]) {
+
+					int result_index;
+					bool factor = true;
+
+					for (int k = j + 1; k < this->rows && factor; ++k) {
+
+						if (this->container[k][i]) {
+							result_index = k;
+
+							for (int col_index = 0; col_index < this->cols; ++col_index) {
+
+								double temp = this->container[result_index][col_index];
+								this->container[result_index][col_index] = this->container[j][col_index];
+								this->container[j][col_index] = temp;
+							}
+
+							factor = false;
+						}
+					}
+				}
 			}
 		}
 
-		for (int i = 0; i < this->rows; ++i) {
-			for (int j = 0; j < this->cols; ++j) {
-				this->container[i][j] = copy_matrix[i][j];
+		for (int k = this->rows - 1; k >= 0; --k) {
+
+			for (int i = k - 1; i >= 0; --i) {
+
+				try {
+
+					value_is_null("to_lower_triangular(): the system cannot be converted to a triangular form",
+						this->container[k][k]);
+
+					double multiplier = this->container[i][k] / this->container[k][k];
+
+					for (int j = this->cols - 1; j >= 0; --j) {
+
+						this->container[i][j] = this->container[i][j] - (multiplier * this->container[k][j]);
+					}
+				}
+				catch (std::string& ex) {
+
+					std::cout << ex << '\n';
+
+					return;
+				}
 			}
 		}
-
+		
 		for (int i = 0; i < this->rows; ++i) {
-			delete[] copy_matrix[i];
+
+			double value = this->container[i][i];
+
+			for (int j = 0; j < this->cols; ++j) {
+				this->container[i][j] = (!this->container[i][j]) ? 0.0 : (this->container[i][j] / value);
+			}
 		}
-		delete[] copy_matrix;
 	}
 }

@@ -149,23 +149,4 @@ namespace advm {
 			return sqrt(k_norm_current);
 		}
 	}
-
-	double matrix::trace() {
-		try {
-			matrix_is_square("trace(): it is impossible to find the trace of the matrix because the matrix is not square");
-
-			double trace_result = 0.0;
-			for (int i = 0; i < this->rows; ++i) {
-				trace_result += this->container[i][i];
-			}
-
-			return trace_result;
-		}
-		catch (const std::string& e) {
-			std::cout << e << '\n';
-
-			float nanf = NAN;
-			return static_cast<double>(nanf);
-		}
-	}
 }

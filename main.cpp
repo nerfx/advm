@@ -9,11 +9,12 @@ int main() {
 
 	setlocale(LC_ALL, "rus");
 
+	/*
 	advm::matrix init(3, 3);
 	init.int_random_input(30, 50);
 	std::cout << init << '\n';
 	
-	advm::matrix test1(3, 3), test2(3, 3), pow_test(3, 3), power_ex(2, 3), triangular(3, 3);
+	advm::matrix test1(3, 3), test2(3, 3), pow_test(3, 3), power_ex(2, 3), t1(3, 3);
 	
 	std::cin >> test1;
 	std::cout << test1.rank() << '\n';
@@ -28,11 +29,25 @@ int main() {
 
 	std::cout << pow_test << '\n';
 	
-	triangular.int_random_input(10, 0);
-	std::cout << triangular << '\n';
+	t1.int_random_input(10, 0);
+	std::cout << t1 << '\n';
 
-	triangular.to_upper_triangular();
-	std::cout << triangular << '\n';
+	t1.to_upper_triangular();
+	std::cout << t1 << '\n';
+	*/
+
+	advm::matrix t2(3, 3), t3(3, 3);
+	t2.int_random_input(10, 0);
+	t3.int_random_input(10, 0);
+
+	std::cout << t2 << '\n';
+	std::cout << t3 << '\n';
+
+	t2.to_upper_triangular();
+	t3.to_lower_triangular();
+
+	std::cout << t2 << '\n';
+	std::cout << t3 << '\n';
 
 	return 0;
 }
