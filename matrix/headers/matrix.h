@@ -208,8 +208,6 @@ namespace advm {
 
 		void delete_col(const int& delete_col_index);
 
-		double* to_vector();
-
 		double m_norm();
 
 		double l_norm();
@@ -227,6 +225,10 @@ namespace advm {
 		void delete_null_cols();
 
 		void power(const int& value);
+
+		void to_upper_triangular();
+
+		int rank();
 
 		template <int N>
 		matrix kramer(const double(&free_column_list)[N] = { 0.0 });
@@ -415,8 +417,56 @@ namespace advm {
 			check_default_matrix("gauss(const double (&)[]: the matrix is default and the system has no solves",
 				free_column[0], this->container[0][0]);
 
-			int null_row_count = 0;
+			int dimension_diff = this->rows - this->cols;
+			if (dimension_diff > 0) {
 
+				double** copy_matrix = new double* [this->rows];
+				for (int i = 0; i < this->rows; ++i) {
+					copy_matrix[i] = new double[this->cols];
+				}
+
+				for (int i = 0; i < this->rows; ++i) {
+					for (int j = 0; j < this->cols; ++j) {
+						copy_matrix[i][j] = this->container[i][j];
+					}
+				}
+
+				for (int i = 0; i < this->rows; ++i) {
+					delete[] this->container[i];
+				}
+				delete[] this->container;
+
+				int index = this->cols - 1;
+				this->cols += dimension_diff;
+				
+				this->container = new double* [this->rows];
+				for (int i = 0; i < this->rows; ++i) {
+					this->container[i] = new double[this->cols];
+				}
+
+				for (int i = 0; i < this->cols; ++i) {
+
+					if (i > index) {
+
+						for (int j = 0; j < this->rows; ++j) {
+							this->container[j][i] = 0.0;
+						}
+					}
+					else {
+
+						for (int j = 0; j < this->rows; ++j) {
+							this->container[j][i] = copy_matrix[j][i];
+						}
+					}
+				}
+
+				for (int i = 0; i < this->rows; ++i) {
+					delete[] copy_matrix[i];
+				}
+				delete[] copy_matrix;
+			}
+			
+			int null_row_count = 0;
 			for (int i = 0; i < this->rows; ++i) {
 
 				int factor = true;
@@ -433,7 +483,6 @@ namespace advm {
 			}
 
 			int null_col_count = 0;
-
 			for (int i = 0; i < this->cols; ++i) {
 
 				bool factor = true;
@@ -459,7 +508,7 @@ namespace advm {
 			}
 
 			check_not_default_matrix("gauss(const double(&)[]: system has no solutions", null_row_count, null_col_count, factor);
-
+			
 			int new_rows = this->rows;
 			int new_cols = this->cols + 1;
 
@@ -550,11 +599,13 @@ namespace advm {
 					}
 				}
 
+				/*
 				for (int i = 0; i < new_rows; ++i) {
 					for (int j = 0; j < new_cols; ++j) {
 						extended_matrix[i][j] = copy_matrix[i][j];
 					}
 				}
+				*/
 			}
 
 			for (int i = new_rows - 1; i >= 0; --i) {

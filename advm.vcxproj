@@ -143,8 +143,13 @@
     <ClCompile Include="complex_functions.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matrix_arithmetic.cpp" />
+    <ClCompile Include="matrix_cols.cpp" />
     <ClCompile Include="matrix_exception.cpp" />
+    <ClCompile Include="matrix_faker.cpp" />
     <ClCompile Include="matrix_linear.cpp" />
+    <ClCompile Include="matrix_norms.cpp" />
+    <ClCompile Include="matrix_transformations.cpp" />
+    <ClCompile Include="matrix_rows.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="complex.h" />
