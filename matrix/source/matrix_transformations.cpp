@@ -5,14 +5,14 @@ namespace advm {
 	void matrix::invert_matrix() {
 
 		try {
-			matrix_is_square("invert_matrix(): to invert matrix impossible because matrix isn't square");
+			matrix_is_square("invert_matrix(): it is impossible because matrix isn't square");
 			const double invert_matrix_det = value_det(this->container, this->rows, this->cols);
 
-			value_is_null("invert_matrix(): to invert matrix impossible because matrix determinant is null", invert_matrix_det);
+			value_is_null("invert_matrix(): it is imbossible to invert because matrix determinant is null", invert_matrix_det);
 
 			if (this->rows == 1 && this->cols == 1) {
 
-				container[0][0] = 1 / invert_matrix_det;
+				this->container[0][0] = 1 / invert_matrix_det;
 				return;
 			}
 			else if (this->rows == 2 && this->cols == 2) {
@@ -414,7 +414,7 @@ namespace advm {
 
 				try {
 
-					value_is_null("to_upper_triangular(): the system cannot be converted to a triangular form", 
+					value_is_null("to_upper_triangular(): the system cannot be converted to a triangular form",
 						this->container[i][i]);
 
 					double multiplier = this->container[j][i] / this->container[i][i];
@@ -500,7 +500,7 @@ namespace advm {
 				}
 			}
 		}
-		
+
 		for (int i = 0; i < this->rows; ++i) {
 
 			double value = this->container[i][i];
@@ -510,4 +510,158 @@ namespace advm {
 			}
 		}
 	}
+
+	void matrix::jordan_gauss() {
+
+		try {
+
+			matrix_is_square("jordan_gauss(): it is impossible to invert matrix because matrix is not square");
+
+			value_is_null("jordan_gauss(): to invert matrix impossible because determinant is null",
+				value_det(this->container, this->rows, this->cols));
+
+			if (this->rows == this->default_rows && this->cols == this->default_cols) {
+
+				double value = 1 / this->container[0][0];
+				this->container[0][0] = value;
+
+				return;
+			}
+
+			for (int i = 0; i < this->rows - 1; ++i) {
+
+				if (!this->container[i][i]) {
+
+					bool factor = true;
+					for (int j = i + 1; j < this->rows && factor; ++j) {
+
+						if (this->container[j][i]) {
+
+							factor = false;
+
+							for (int k = 0; k < this->cols; ++k) {
+
+								double temp = this->container[j][k];
+								this->container[j][k] = this->container[i][k];
+								this->container[i][k] = temp;
+							}
+						}
+					}
+				} 
+			}
+
+			for (int i = 0; i < this->rows; ++i) {
+				for (int j = 0; j < this->cols; ++j) {
+					std::cout << this->container[i][j] << '\t';
+				}
+
+				std::cout << '\n';
+			}
+
+			double** identity_matrix = new double* [this->rows];
+			for (int i = 0; i < this->rows; ++i) {
+				identity_matrix[i] = new double[this->cols];
+			}
+
+			for (int i = 0; i < this->rows; ++i) {
+
+				for (int j = 0; j < this->cols; ++j) {
+
+					if (i == j) {
+
+						identity_matrix[i][j] = 1.0;
+					}
+					else {
+
+						identity_matrix[i][j] = 0.0;
+					}
+				}
+			}
+
+			for (int k = 0; k < this->rows; ++k) {
+
+				for (int i = k + 1; i < this->rows; ++i) {
+
+					try {
+
+						value_is_null("jordan_gauss(): it is impossible to invert matrix because some divisor is null",
+							this->container[k][k]);
+
+						double multiplier = this->container[i][k] / this->container[k][k];
+
+						for (int j = 0; j < this->cols; ++j) {
+
+							this->container[i][j] = this->container[i][j] - (multiplier * this->container[k][j]);
+						}
+
+						for (int j = 0; j < this->cols; ++j) {
+
+							identity_matrix[i][j] = identity_matrix[i][j] - (multiplier * identity_matrix[k][j]);
+						}
+					}
+					catch (std::string& ex) {
+
+						std::cout << ex << '\n';
+
+						return;
+					}
+				}
+			}
+
+			for (int k = this->rows - 1; k >= 0; --k) {
+
+				for (int i = k - 1; i >= 0; --i) {
+
+					try {
+
+						value_is_null("jordan_gauss(): it is impossible to invert matrix because some divisor is null",
+							this->container[k][k]);
+
+						double multiplier = this->container[i][k] / this->container[k][k];
+
+						for (int j = this->cols - 1; j >= 0; --j) {
+
+							this->container[i][j] = this->container[i][j] - (multiplier * this->container[k][j]);
+						}
+
+						for (int j = this->cols - 1; j >= 0; --j) {
+
+							identity_matrix[i][j] = identity_matrix[i][j] - (multiplier * identity_matrix[k][j]);
+						}
+					}
+					catch (std::string& ex) {
+
+						std::cout << ex << '\n';
+
+						return;
+					}
+				}
+			}
+
+			for (int i = 0; i < this->rows; ++i) {
+				
+				double diagonal_div = this->container[i][i];
+
+				for (int j = 0; j < this->cols; ++j) {
+					identity_matrix[i][j] = (!identity_matrix[i][j]) ? 0.0 : (identity_matrix[i][j] / diagonal_div);
+				}
+			}
+
+			for (int i = 0; i < this->rows; ++i) {
+				for (int j = 0; j < this->cols; ++j) {
+					this->container[i][j] = identity_matrix[i][j];
+				}
+			}
+
+			for (int i = 0; i < this->rows; ++i) {
+				delete[] identity_matrix[i];
+			}
+			delete[] identity_matrix;
+		}
+		catch (std::string& ex) {
+
+			std::cout << ex << '\n';
+		}
+	}
 }
+

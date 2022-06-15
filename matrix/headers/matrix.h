@@ -232,6 +232,8 @@ namespace advm {
 
 		int rank();
 
+		void jordan_gauss();
+
 		template <int N>
 		matrix kramer(const double(&free_column_list)[N] = { 0.0 });
 

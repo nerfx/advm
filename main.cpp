@@ -34,7 +34,7 @@ int main() {
 
 	t1.to_upper_triangular();
 	std::cout << t1 << '\n';
-	*/
+	
 
 	advm::matrix t2(3, 3), t3(3, 3);
 	t2.int_random_input(10, 0);
@@ -48,6 +48,14 @@ int main() {
 
 	std::cout << t2 << '\n';
 	std::cout << t3 << '\n';
+	*/
+
+	advm::matrix j_g(3, 3);
+	std::cin >> j_g;
+
+	j_g.jordan_gauss();
+
+	std::cout << j_g << '\n';
 
 	return 0;
 }
